@@ -136,22 +136,23 @@ def findSettingsModule():
         with open('manage.py', 'r') as manage:
             manage_contents = manage.read()
 
-            search = re.search(
-                r"([\"\'](?P<module>[a-z\.]+)[\"\'])", manage_contents
-            )
-            if search:  # django version < 1.7
-                settings_mod = search.group("module")
-
-            else:
-                # in 1.7, manage.py settings declaration looks like:
-                # os.environ.setdefault(
-                #     "DJANGO_SETTINGS_MODULE", "example_app.settings"
-                # )
-                search = re.search(
-                    "\".*?\"(,\\s)??\"(?P<module>.*?)\"\\)$",
-                    manage_contents, re.I | re.S | re.M
-                )
-                settings_mod = search.group("module")
+        search = re.search(
+            r'[\'\"]DJANGO_SETTINGS_MODULE[\'\"]\s*,\s*[\"\'](?P<module>.+?)[\"\']',
+            manage_contents
+        )
+        # if search:  # django version < 1.7
+        #     settings_mod = search.group("module")
+        # 
+        # else:
+        #     # in 1.7, manage.py settings declaration looks like:
+        #     # os.environ.setdefault(
+        #     #     "DJANGO_SETTINGS_MODULE", "example_app.settings"
+        #     # )
+        #     search = re.search(
+        #         "\".*?\"(,\\s)??\"(?P<module>.*?)\"\\)$",
+        #         manage_contents, re.I | re.S | re.M
+        #     )
+        settings_mod = search.group("module")
 
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_mod)
     except IOError as e:
